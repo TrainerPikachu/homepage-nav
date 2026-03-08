@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Homepage</title>
+    <style>
+      /* 基础页面样式重置 */
+      body {
+        margin: 0;
+        overflow: hidden; /* 隐藏滚动条 */
+        background-color: #0f0f11; /* 深色背景 */
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+
+      /* 确保 Canvas 占满全屏并置于底层 */
+      canvas {
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      /* 导航菜单容器，置于顶层居中 */
+      #nav-container {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 10;
+      }
+
+      h1 {
+        color: #ffffff;
+        font-size: 2.5rem;
+        margin-bottom: 2rem;
+        letter-spacing: 2px;
+        text-shadow: 0 2px 10px rgba(0, 255, 204, 0.3);
+      }
+
+      /* 导航链接样式 */
+      .nav-links a {
+        display: inline-block;
+        margin: 0 15px;
+        padding: 12px 24px;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        border: 1px solid rgba(0, 255, 204, 0.3);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        backdrop-filter: blur(4px); /* 毛玻璃效果 */
+        transition: all 0.3s ease;
+      }
+
+      .nav-links a:hover {
+        background: rgba(0, 255, 204, 0.2);
+        border-color: #00ffcc;
+        box-shadow: 0 0 15px rgba(0, 255, 204, 0.4);
+        transform: translateY(-2px);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="nav-container">
+      <h1>Hi! This is Ron Hong.</h1>
+      <div class="nav-links">
+        <a href="https://github.com/TrainerPikachu" target="_blank">GitHub</a>
+        <a href="https://blog.ronhong.me/">Blog</a>
+        <a href="https://www.linkedin.com/in/ron-hong-5336871b7/">LinkedIn</a>
+      </div>
+    </div>
+
+    <script type="module">
+      // 从 CDN 引入 Three.js (使用现代的 ES Module 方式)
+      import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+
+      // 1. 创建场景、相机和渲染器
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000,
+      );
+
+      const renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      document.body.appendChild(renderer.domElement);
+
+      // 2. 创建一个极简的线框几何体 (这里用的是圆环结 TorusKnot)
+      const geometry = new THREE.TorusKnotGeometry(10, 2.5, 120, 16);
+      const material = new THREE.MeshBasicMaterial({
+        color: 0x00ffcc, // 青色
+        wireframe: true, // 开启线框模式
+        transparent: true,
+        opacity: 0.15, // 降低透明度，避免喧宾夺主
+      });
+      const torusKnot = new THREE.Mesh(geometry, material);
+      scene.add(torusKnot);
+
+      // 将相机往后推，以便看到几何体
+      camera.position.z = 30;
+
+      // 3. 动画循环：让几何体转起来
+      function animate() {
+        requestAnimationFrame(animate);
+
+        // 每帧稍微旋转一点点
+        torusKnot.rotation.x += 0.003;
+        torusKnot.rotation.y += 0.004;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // 4. 监听窗口大小变化，保持画面不变形
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>
